@@ -20,6 +20,17 @@ const LoginForm = () => {
   const initialCredentials = {
     email: "",
     password: "",
+    password2: "",
+  };
+
+  const validateConfirmPassword = (pass: string, value: string) => {
+    let error = "";
+    if (pass && value) {
+      if (pass !== value) {
+        error = "Password not matched";
+      }
+    }
+    return error;
   };
 
   return (
@@ -57,6 +68,7 @@ const LoginForm = () => {
           isSubmitting,
           handleChange,
           handleBlur,
+          isValid,
         }) => (
           <Form>
             {/* Email Field */}
@@ -88,7 +100,9 @@ const LoginForm = () => {
             )}
 
             {/* SUBMIT FORM */}
-            <button type="submit">Login</button>
+            <button type="submit">
+              Login
+            </button>
 
             {/* Message if the form is submitting */}
             {isSubmitting ? <p>Checking credentials...</p> : null}
