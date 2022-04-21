@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -20,18 +21,9 @@ const LoginForm = () => {
   const initialCredentials = {
     email: "",
     password: "",
-    password2: "",
   };
 
-  const validateConfirmPassword = (pass: string, value: string) => {
-    let error = "";
-    if (pass && value) {
-      if (pass !== value) {
-        error = "Password not matched";
-      }
-    }
-    return error;
-  };
+  let navigate = useNavigate();
 
   return (
     <div>
@@ -42,13 +34,14 @@ const LoginForm = () => {
         validationSchema={loginSchema}
         onSubmit={async (values) => {
           login(values.email, values.password)
-            .then((response: AxiosResponse) => {
+            .then(async (response: AxiosResponse) => {
               if (response.status === 200) {
                 if (response.data.token) {
-                  sessionStorage.setItem(
+                  await sessionStorage.setItem(
                     "sessionJWTToken",
                     response.data.token
                   );
+                  navigate("/");
                 } else {
                   throw new Error("Error generating Login Token");
                 }
@@ -68,7 +61,6 @@ const LoginForm = () => {
           isSubmitting,
           handleChange,
           handleBlur,
-          isValid,
         }) => (
           <Form>
             {/* Email Field */}
@@ -100,9 +92,7 @@ const LoginForm = () => {
             )}
 
             {/* SUBMIT FORM */}
-            <button type="submit">
-              Login
-            </button>
+            <button type="submit">Login</button>
 
             {/* Message if the form is submitting */}
             {isSubmitting ? <p>Checking credentials...</p> : null}

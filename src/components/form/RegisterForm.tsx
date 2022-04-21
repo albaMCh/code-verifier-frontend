@@ -1,65 +1,62 @@
 import React from "react";
-
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-
-import { login } from "../../services/authService";
 import { AxiosResponse } from "axios";
 
-// Define Schema of validation with Yup
-const registerSchema = Yup.object().shape({
-  email: Yup.string()
-    .email("Invalid Email Format")
-    .required("Email is required"),
-  password: Yup.string().required("Password is required"),
-});
+import { register } from "../../services/authService";
 
-// Login Component
 const RegisterForm = () => {
-  // We define the initial credentials
-  const initialCredentials = {
+  const initialValues = {
     name: "",
-    age: "",
     email: "",
     password: "",
-    password2: "",
+    confirm: "",
+    age: 18,
   };
 
-  const validateConfirmPassword = (pass: string, value: string) => {
-    let error = "";
-    if (pass && value) {
-      if (pass !== value) {
-        error = "Password not matched";
-      }
-    }
-    return error;
-  };
+  // Yup Validation Schema
+  const registerSchema = Yup.object().shape({
+    name: Yup.string()
+      .min(6, "Username must have 6 letters minimum")
+      .max(12, "Username must have maximum 12 letters")
+      .required("Username is required"),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(8, "Password too short")
+      .required("Password is required"),
+    confirm: Yup.string()
+      .when("password", {
+        is: (value: string) => (value && value.length > 0 ? true : false),
+        then: Yup.string().oneOf([Yup.ref("password")], "Passwords must match"),
+      })
+      .required("You mus confirm your password"),
+    age: Yup.number()
+      .min(10, "You must be over 10 years old")
+      .required("Age is required"),
+  });
 
   return (
     <div>
-      <h4>Register Form</h4>
-      {/* Formik to encapsulate a Form */}
+      <h4>Register as a new user</h4>
+      {/* Formik wrapper */}
       <Formik
-        initialValues={initialCredentials}
+        initialValues={initialValues}
         validationSchema={registerSchema}
         onSubmit={async (values) => {
-          login(values.email, values.password)
+          register(values.name, values.email, values.password, values.age)
             .then((response: AxiosResponse) => {
               if (response.status === 200) {
-                if (response.data.token) {
-                  sessionStorage.setItem(
-                    "sessionJWTToken",
-                    response.data.token
-                  );
-                } else {
-                  throw new Error("Error generating Login Token");
-                }
+                console.log("User registered correctly");
+                console.log(response.data);
+                alert("User registered correctly");
               } else {
-                throw new Error("Invalid Credentials");
+                throw new Error("Error in registry");
               }
             })
             .catch((error) =>
-              console.error(`[LOGIN ERROR]: Something went wrong: ${error}`)
+              console.error(`[Register ERROR]: Something went wrong: ${error}`)
             );
         }}
       >
@@ -70,24 +67,15 @@ const RegisterForm = () => {
           isSubmitting,
           handleChange,
           handleBlur,
-          isValid,
         }) => (
           <Form>
             {/* Name Field */}
             <label htmlFor="name">Name</label>
-            <Field id="name" type="name" name="name" placeholder="name" />
+            <Field id="name" type="text" name="name" placeholder="Your Name" />
+
             {/* Name Errors */}
             {errors.name && touched.name && (
               <ErrorMessage name="name" component="div"></ErrorMessage>
-            )}
-
-            {/* Age Field */}
-            <label htmlFor="">Age</label>
-            <Field id="age" type="age" name="age" placeholder="age" />
-
-            {/* Name Errors */}
-            {errors.age && touched.age && (
-              <ErrorMessage name="age" component="div"></ErrorMessage>
             )}
 
             {/* Email Field */}
@@ -110,7 +98,7 @@ const RegisterForm = () => {
               id="password"
               type="password"
               name="password"
-              placeholder="example"
+              placeholder="Password"
             />
 
             {/* Password Errors */}
@@ -118,30 +106,34 @@ const RegisterForm = () => {
               <ErrorMessage name="password" component="div"></ErrorMessage>
             )}
 
-            {/* Password Field */}
-            <label htmlFor="password2">Password2</label>
+            {/* Confirm Password Field */}
+            <label htmlFor="confirm">Confirm Password</label>
             <Field
-              id="password2"
+              id="confirm"
               type="password"
-              name="password2"
-              placeholder="example"
-              validate={(value: any) =>
-                validateConfirmPassword(values.password, value)
-              }
+              name="confirm"
+              placeholder="Confirm your password"
             />
 
-            {/* Password 2 Errors */}
-            {errors.password2 && touched.password2 && (
-              <ErrorMessage name="password2" component="div"></ErrorMessage>
+            {/* Confim Password Errors */}
+            {errors.confirm && touched.confirm && (
+              <ErrorMessage name="confirm" component="div"></ErrorMessage>
+            )}
+
+            {/* Age Field */}
+            <label htmlFor="age">Age</label>
+            <Field id="age" type="number" name="age" />
+
+            {/* Password Errors */}
+            {errors.age && touched.age && (
+              <ErrorMessage name="age" component="div"></ErrorMessage>
             )}
 
             {/* SUBMIT FORM */}
-            <button type="submit" disabled={!isValid}>
-              Register
-            </button>
+            <button type="submit">Register</button>
 
             {/* Message if the form is submitting */}
-            {isSubmitting ? <p>Checking credentials...</p> : null}
+            {isSubmitting ? <p>Sending data to registry...</p> : null}
           </Form>
         )}
       </Formik>
