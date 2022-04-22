@@ -7,7 +7,7 @@ interface EditorProps {
   children?: any;
 }
 
-export const Editor = ({ language, children }: EditorProps) => {
+export const Editor = ({ language, children, solution }: EditorProps) => {
   const codeExample = `
     (function someDemo() {
       var test = "Hello World!";
