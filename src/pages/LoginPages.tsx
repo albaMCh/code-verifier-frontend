@@ -1,11 +1,12 @@
 import React from "react";
 import LoginForm from "../components/form/LoginForm";
+import { LoginMaterial } from "../components/form/LoginMaterial";
 
 export const LoginPage = () => {
   return (
     <div>
-      <h1>Login Page</h1>
-      <LoginForm />
+      {/* <LoginForm /> */}
+      <LoginMaterial />
     </div>
   );
 };

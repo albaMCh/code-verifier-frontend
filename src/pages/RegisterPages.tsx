@@ -1,11 +1,12 @@
 import React from "react";
 import RegisterForm from "../components/form/RegisterForm";
+import { RegisterMaterial } from "../components/form/RegisterMaterial";
 
 export const RegisterPage = () => {
   return (
     <div>
-      <h1>Register Page</h1>
-      <RegisterForm />
+      {/* <RegisterForm /> */}
+      <RegisterMaterial />
     </div>
   );
 };

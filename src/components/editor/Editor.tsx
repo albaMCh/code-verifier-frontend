@@ -5,9 +5,10 @@ import Highlight, { defaultProps } from "prism-react-renderer";
 interface EditorProps {
   language?: any;
   children?: any;
+  solution?: any;
 }
 
-export const Editor = ({ language, children }: EditorProps) => {
+export const Editor = ({ language, children, solution }: EditorProps) => {
   const codeExample = `
     (function someDemo() {
       var test = "Hello World!";
