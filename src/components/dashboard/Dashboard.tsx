@@ -34,6 +34,8 @@ import Paper from "@mui/material/Paper";
 import { MenuItems } from "./MenuItems";
 import { NewEditor } from "../editor/NewEditor";
 import { TipTapEditor } from "../editor/TipTapEditor";
+import { FileUploader } from "../uploader/FileUploader";
+import { Outlet } from "react-router-dom";
 
 // Width for Drawer Menu
 const drawerWidth: number = 240;
@@ -166,7 +168,7 @@ export const Dashboard = () => {
           </Toolbar>
           <Divider />
           {/* List of menu items */}
-          <List component="nav">{MenuItems}</List>
+          <List component="nav">{<MenuItems />}</List>
         </Drawer>
         {/* Dashboard Content */}
         <Box
@@ -187,18 +189,12 @@ export const Dashboard = () => {
           {/* TODO: Change for the Navigation Content by URL and Stack of Routes */}
           <Container maxWidth="lg" sx={{ mt: 4, mg: 4 }}>
             <Grid item xs={12} md={12} lg={12}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  height: 400,
-                }}
-              >
-                {/* Code Editor */}
-                <NewEditor />
-                {/* <TipTapEditor /> */}
-              </Paper>
+              {/* Code Editor */}
+              {/*<NewEditor /> */}
+              {/* <TipTapEditor /> */}
+
+              {/* <FileUploader /> */}
+              <Outlet />
             </Grid>
           </Container>
         </Box>

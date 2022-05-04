@@ -15,40 +15,45 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { login } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
 import { AxiosResponse } from "axios";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const theme = createTheme();
 
+const loginSchema = Yup.object().shape({
+  email: Yup.string()
+    .email("Invalid Email Format")
+    .required("Email is required"),
+  password: Yup.string().required("Password is required"),
+});
 export const LoginMaterial = () => {
   let navigate = useNavigate();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-
-    login(data.get("email") as string, data.get("password") as string)
-      .then(async (response: AxiosResponse) => {
-        if (response.status === 200) {
-          if (response.data.token) {
-            await sessionStorage.setItem(
-              "sessionJWTToken",
-              response.data.token
-            );
-            navigate("/");
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: loginSchema,
+    onSubmit: (values) => {
+      login(values.email, values.password)
+        .then((response: AxiosResponse) => {
+          if (response.status === 200) {
+            if (response.data.token) {
+              sessionStorage.setItem("sessionJWTToken", response.data.token);
+              navigate("/");
+            } else {
+              throw new Error("Error generating Login Token");
+            }
           } else {
-            throw new Error("Error generating Login Token");
+            throw new Error("Invalid credentials");
           }
-        } else {
-          throw new Error("Invalid Credentials");
-        }
-      })
-      .catch((error) =>
-        console.error(`[LOGIN ERROR]: Something went wrong: ${error}`)
-      );
-  };
+        })
+        .catch((error) => {
+          console.error(`[LOGIN ERROR]: Something went wrong: ${error}`);
+        });
+    },
+  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -70,7 +75,7 @@ export const LoginMaterial = () => {
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={formik.handleSubmit}
             noValidate
             sx={{ mt: 1 }}
           >
@@ -83,6 +88,10 @@ export const LoginMaterial = () => {
               name="email"
               autoComplete="email"
               autoFocus
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
             />
             <TextField
               margin="normal"
@@ -93,6 +102,10 @@ export const LoginMaterial = () => {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -113,7 +126,7 @@ export const LoginMaterial = () => {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/register" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

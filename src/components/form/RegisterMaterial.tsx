@@ -14,37 +14,61 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { AxiosResponse } from "axios";
 import { register } from "../../services/authService";
-
+import * as Yup from "yup";
+import { useFormik } from "formik";
+import { useNavigate } from "react-router-dom";
 const theme = createTheme();
 
-export const RegisterMaterial = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+const registerSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(6, "Username must have 6 letters minimum")
+    .max(12, "Username must have maximum 12 letters")
+    .required("Username is required"),
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  password: Yup.string()
+    .min(8, "Password too short")
+    .required("Password is required"),
+  confirm: Yup.string()
+    .when("password", {
+      is: (value: string) => (value && value.length > 0 ? true : false),
+      then: Yup.string().oneOf([Yup.ref("password")], "Passwords must match"),
+    })
+    .required("You mus confirm your password"),
+  age: Yup.number()
+    .min(10, "You must be over 10 years old")
+    .required("Age is required"),
+});
 
-    register(
-      data.get("name") as string,
-      data.get("email") as string,
-      data.get("password") as string,
-      data.get("age") as unknown as number
-    )
-      .then((response: AxiosResponse) => {
-        if (response.status === 200) {
-          console.log("User registered correctly");
-          console.log(response.data);
-          alert("User registered correctly");
-        } else {
-          throw new Error("Error in registry");
-        }
-      })
-      .catch((error) =>
-        console.error(`[Register ERROR]: Something went wrong: ${error}`)
-      );
-  };
+export const RegisterMaterial = () => {
+  let navigate = useNavigate();
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirm: "",
+      age: undefined,
+    },
+    validationSchema: registerSchema,
+    onSubmit: (values) => {
+      register(values.name, values.email, values.password, values.age)
+        .then((response: AxiosResponse) => {
+          if (response.status === 200) {
+            console.log("User registered correctly!");
+            console.log(response.data);
+            alert("User registered correctly");
+            navigate("/login");
+          } else {
+            throw new Error("Error in registry");
+          }
+        })
+        .catch((error) =>
+          console.error(`[REGISTER ERROR]: Something went wrong: ${error}`)
+        );
+    },
+  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -67,29 +91,37 @@ export const RegisterMaterial = () => {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={formik.handleSubmit}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  autoComplete="given-name"
-                  name="firstName"
+                  autoComplete="name"
+                  name="name"
                   required
                   fullWidth
-                  id="firstName"
-                  label="First Name"
+                  id="name"
+                  label="Name"
                   autoFocus
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  error={formik.touched.name && Boolean(formik.errors.name)}
+                  helperText={formik.touched.name && formik.errors.name}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   required
                   fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
+                  id="age"
+                  label="Age"
+                  name="age"
+                  autoComplete="age"
+                  value={formik.values.age}
+                  onChange={formik.handleChange}
+                  error={formik.touched.age && Boolean(formik.errors.age)}
+                  helperText={formik.touched.age && formik.errors.age}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -100,6 +132,10 @@ export const RegisterMaterial = () => {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -111,6 +147,12 @@ export const RegisterMaterial = () => {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.touched.password && Boolean(formik.errors.password)
+                  }
+                  helperText={formik.touched.password && formik.errors.password}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -118,18 +160,16 @@ export const RegisterMaterial = () => {
                   required
                   fullWidth
                   name="confirm"
-                  label="Confirm password"
+                  label="Confirm Password"
                   type="password"
-                  id="confirm-password"
-                  autoComplete="new-password"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
+                  id="confirm"
+                  autoComplete="confirm-password"
+                  value={formik.values.confirm}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.touched.confirm && Boolean(formik.errors.confirm)
                   }
-                  label="I want to receive inspiration, marketing promotions and updates via email."
+                  helperText={formik.touched.confirm && formik.errors.confirm}
                 />
               </Grid>
             </Grid>
@@ -143,7 +183,7 @@ export const RegisterMaterial = () => {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/login" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>

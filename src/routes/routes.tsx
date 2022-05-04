@@ -9,18 +9,21 @@ import {
 import { HomePage } from "../pages/HomePages";
 import { LoginPage } from "../pages/LoginPages";
 import { RegisterPage } from "../pages/RegisterPages";
-import { KatasPage } from "../pages/KatasPages";
-import { KatasDetailPage } from "../pages/KataDetailPage";
+import { KatasPage } from "../pages/KatasPage";
+import { KataCreatePage } from "../pages/KataCreatePage";
+import { KataDetailPage } from "../pages/KataDetailPage";
 
 export const AppRoutes = () => {
   return (
     <Routes>
       {/* Routes definition */}
-      <Route path="/" element={<HomePage />}></Route>
+      <Route path="/" element={<HomePage />}>
+        <Route path="/katas" element={<KatasPage />}></Route>
+        <Route path="/katas/create" element={<KataCreatePage />}></Route>
+        <Route path="/katas/:id" element={<KataDetailPage />}></Route>
+      </Route>
       <Route path="/login" element={<LoginPage />}></Route>
       <Route path="/register" element={<RegisterPage />}></Route>
-      <Route path="/katas" element={<KatasPage />}></Route>
-      <Route path="/katas/:id" element={<KatasDetailPage />}></Route>
       {/* Redirecto when Page Not Found */}
       <Route path="*" element={<Navigate to="/" replace />}></Route>
     </Routes>

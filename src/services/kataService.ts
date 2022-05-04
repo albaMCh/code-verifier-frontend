@@ -29,3 +29,23 @@ export const getKataByID = (token: string, id: string) => {
   };
   return axios.get("/katas", options);
 };
+
+export const createKata = (
+  name: string,
+  description: string,
+  level: string
+) => {
+  debugger;
+  const options: AxiosRequestConfig = {
+    headers: {
+      "x-access-token": sessionStorage.getItem("sessionJWTToken") as string,
+    },
+  };
+
+  const body = {
+    name,
+    description,
+    level,
+  };
+  return axios.post("/katas", body, options);
+};
