@@ -44,3 +44,8 @@ export const register = (
   // Send POST to login endpoint
   return axios.post("auth/register", body);
 };
+
+export const logout = () => {
+  window.sessionStorage.removeItem("sessionJWTToken");
+  window.sessionStorage.removeItem("sessionUserID");
+};

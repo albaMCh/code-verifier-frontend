@@ -20,7 +20,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useSessionStorage } from "../hooks/useSessionStorage";
-import { getAllKatas } from "../services/kataService";
+import { getAllKatas, deleteKata } from "../services/kataService";
 import { Kata } from "../utils/types/Kata.types";
 import TablePagination from "@mui/material/TablePagination";
 
@@ -64,7 +64,7 @@ export const KatasPage = () => {
    * Method to navigate to Kata details
    * @param id  of Kata to navigate to
    */
-  const navigateToKataDetail = (id: number) => {
+  const navigateToKataDetail = (id: string) => {
     navigate(`/katas/${id}`);
   };
   const handleChangePage = (
@@ -114,6 +114,36 @@ export const KatasPage = () => {
       .catch((error) => console.error(`[GET ALL KATAS ERROR]: ${error}`));
   };
 
+  const onDeleteClick = async (id: string) => {
+    try {
+      await deleteKata(id);
+
+      return getAllKatas(loggedIn, rowsPerPage, currentPage)
+        .then((response: AxiosResponse) => {
+          if (
+            response.status === 200 &&
+            response.data.katas &&
+            response.data.totalPages &&
+            response.data.currentPage
+          ) {
+            let { katas, totalPages, currentPage } = response.data;
+            setKatas(katas);
+            setTotalPages(totalPages);
+            setCurrentPage(currentPage);
+          } else {
+            throw new Error(`Error obtaining katas: ${response.data}`);
+          }
+        })
+        .catch((error) => console.error(`[GET ALL KATAS ERROR]: ${error}`));
+    } catch (e) {
+      alert("Hubo un error al eliminar la kata");
+    }
+  };
+
+  const onParticipateClick = (id: string) => {
+    navigate(`/katas/${id}/participate`);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -144,7 +174,7 @@ export const KatasPage = () => {
             </Stack>
           </Container>
         </Box>
-        <Container sx={{ py: 8 }} maxWidth="md">
+        <Container sx={{ py: 8 }} maxWidth="lg">
           {/* End hero unit */}
           <Grid container spacing={4}>
             {katas.map((kata: Kata) => (
@@ -169,7 +199,24 @@ export const KatasPage = () => {
                     >
                       Ver
                     </Button>
-                    <Button size="small">Editar</Button>
+                    <Button
+                      size="small"
+                      onClick={() => navigate(`/katas/${kata._id}/edit`)}
+                    >
+                      Editar
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => onDeleteClick(kata._id)}
+                    >
+                      Eliminar
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => onParticipateClick(kata._id)}
+                    >
+                      Participar
+                    </Button>
                   </CardActions>
                 </Card>
               </Grid>

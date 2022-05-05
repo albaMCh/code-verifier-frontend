@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSessionStorage } from "../../hooks/useSessionStorage";
 
 // Theme personalization of Material UI
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
@@ -36,6 +37,9 @@ import { NewEditor } from "../editor/NewEditor";
 import { TipTapEditor } from "../editor/TipTapEditor";
 import { FileUploader } from "../uploader/FileUploader";
 import { Outlet } from "react-router-dom";
+
+import { logout } from "../../services/authService";
+import { useNavigate } from "react-router-dom";
 
 // Width for Drawer Menu
 const drawerWidth: number = 240;
@@ -99,11 +103,25 @@ const myTheme = createTheme();
 // TODO: Refactor with Navigation Components
 export const Dashboard = () => {
   const [open, setOpen] = useState(true);
+  const loggedIn = useSessionStorage("sessionJWTToken");
+
+  const navigate = useNavigate();
 
   // Show / Hide Drawer Menu
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const onLogoutClick = () => {
+    logout();
+    navigate("/login");
+  };
+
+  useEffect(() => {
+    if (!loggedIn) {
+      return navigate("/login");
+    }
+  }, [loggedIn]);
 
   return (
     <ThemeProvider theme={myTheme}>
@@ -147,7 +165,7 @@ export const Dashboard = () => {
               </Badge>
             </IconButton>
             {/* ICON to Logout */}
-            <IconButton color="inherit">
+            <IconButton color="inherit" onClick={() => onLogoutClick()}>
               <LogoutIcon />
             </IconButton>
           </Toolbar>

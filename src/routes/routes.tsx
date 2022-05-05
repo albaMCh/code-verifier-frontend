@@ -12,6 +12,8 @@ import { RegisterPage } from "../pages/RegisterPages";
 import { KatasPage } from "../pages/KatasPage";
 import { KataCreatePage } from "../pages/KataCreatePage";
 import { KataDetailPage } from "../pages/KataDetailPage";
+import { KataEditPage } from "../pages/KataEditPage";
+import { KataParticipatePage } from "../pages/KataParticipatePage";
 
 export const AppRoutes = () => {
   return (
@@ -21,6 +23,11 @@ export const AppRoutes = () => {
         <Route path="/katas" element={<KatasPage />}></Route>
         <Route path="/katas/create" element={<KataCreatePage />}></Route>
         <Route path="/katas/:id" element={<KataDetailPage />}></Route>
+        <Route path="/katas/:id/edit" element={<KataEditPage />}></Route>
+        <Route
+          path="/katas/:id/participate"
+          element={<KataParticipatePage />}
+        ></Route>
       </Route>
       <Route path="/login" element={<LoginPage />}></Route>
       <Route path="/register" element={<RegisterPage />}></Route>

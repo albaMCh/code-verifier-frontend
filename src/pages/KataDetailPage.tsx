@@ -33,9 +33,6 @@ export const KataDetailPage = () => {
   // Find id from params
   const { id } = useParams();
   const [kata, setKata] = useState<Kata | undefined>(undefined);
-  const [showSolution, setShowSolution] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
-  const [showVote, setShowVote] = useState(false);
 
   useEffect(() => {
     if (!loggedIn) {
@@ -60,15 +57,7 @@ export const KataDetailPage = () => {
                 participants: response.data.participants,
               };
 
-              let userID: string =
-                sessionStorage?.getItem("sessionUserID") || " ";
               setKata(kataData);
-              if (kataData.creator === userID) {
-                setShowEdit(true);
-              }
-              if (kataData.participants.indexOf(userID) >= 0) {
-                setShowVote(true);
-              }
             }
           })
           .catch((error) => console.error(`[Kata By ID ERROR]: ${error}`));
@@ -105,37 +94,6 @@ export const KataDetailPage = () => {
       >
         Rating: {kata?.stars.average}/5
       </Typography>
-      <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
-        {showVote ? (
-          <Button
-            variant="contained"
-            onClick={() => setShowSolution(!showSolution)}
-          >
-            {showSolution ? "Hide Solution" : "Show Solution"}
-          </Button>
-        ) : (
-          <Button variant="outlined" disabled>
-            {showSolution ? "Hide Solution" : "Show Solution"}
-          </Button>
-        )}
-        {showVote ? (
-          <Button variant="contained">Vote Kata</Button>
-        ) : (
-          <Button variant="outlined" disabled>
-            Vote Kata
-          </Button>
-        )}
-        {showEdit ? (
-          <Button variant="contained">Edit Kata</Button>
-        ) : (
-          <Button variant="outlined" disabled>
-            Edit Kata
-          </Button>
-        )}
-      </Stack>
-      <Container sx={{ py: 8 }} maxWidth="md">
-        {showSolution ? <Editor>{kata?.solution}</Editor> : null}
-      </Container>
     </ThemeProvider>
   );
 };

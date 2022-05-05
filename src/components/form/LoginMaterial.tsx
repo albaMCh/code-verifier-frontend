@@ -40,7 +40,9 @@ export const LoginMaterial = () => {
         .then((response: AxiosResponse) => {
           if (response.status === 200) {
             if (response.data.token) {
+              debugger;
               sessionStorage.setItem("sessionJWTToken", response.data.token);
+              sessionStorage.setItem("sessionUserID", response.data.userID);
               navigate("/");
             } else {
               throw new Error("Error generating Login Token");

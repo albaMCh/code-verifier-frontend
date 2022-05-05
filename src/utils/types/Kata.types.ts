@@ -9,7 +9,7 @@ export type IValorationUser = {
 };
 
 export type Kata = {
-  _id: number;
+  _id: string;
   name: string;
   description: string;
   level: KataLevel;

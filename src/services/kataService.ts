@@ -49,3 +49,62 @@ export const createKata = (
   };
   return axios.post("/katas", body, options);
 };
+
+export const updateKata = (
+  id: string,
+  name: string,
+  description: string,
+  level: string
+) => {
+  const options: AxiosRequestConfig = {
+    headers: {
+      "x-access-token": sessionStorage.getItem("sessionJWTToken") as string,
+    },
+  };
+
+  const body = {
+    name,
+    description,
+    level,
+  };
+  return axios.put(`/katas?id=${id}`, body, options);
+};
+
+export const deleteKata = (id: string) => {
+  const options: AxiosRequestConfig = {
+    headers: {
+      "x-access-token": sessionStorage.getItem("sessionJWTToken") as string,
+    },
+  };
+
+  return axios.delete(`/katas?id=${id}`, options);
+};
+
+export const voteKata = (id: string, vote: number) => {
+  const options: AxiosRequestConfig = {
+    headers: {
+      "x-access-token": sessionStorage.getItem("sessionJWTToken") as string,
+    },
+    params: {
+      id: id,
+      vote: vote,
+    },
+  };
+  // Declare Body to post
+  const body = {};
+  return axios.put("/katas/vote", body, options);
+};
+
+export const solveKata = (id: string) => {
+  const options: AxiosRequestConfig = {
+    headers: {
+      "x-access-token": sessionStorage.getItem("sessionJWTToken") as string,
+    },
+    params: {
+      id: id,
+    },
+  };
+  // Declare Body to post
+  const body = {};
+  return axios.put("/katas/solve", body, options);
+};
