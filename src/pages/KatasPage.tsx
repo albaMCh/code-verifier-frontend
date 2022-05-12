@@ -40,7 +40,7 @@ export const KatasPage = () => {
     if (!loggedIn) {
       return navigate("/login");
     } else {
-      getAllKatas(loggedIn, rowsPerPage, currentPage)
+      getAllKatas(rowsPerPage, currentPage)
         .then((response: AxiosResponse) => {
           if (
             response.status === 200 &&
@@ -72,7 +72,7 @@ export const KatasPage = () => {
     page: number
   ) => {
     setCurrentPage(+page + 1);
-    getAllKatas(loggedIn, rowsPerPage, +page + 1)
+    getAllKatas(rowsPerPage, +page + 1)
       .then((response: AxiosResponse) => {
         if (
           response.status === 200 &&
@@ -95,7 +95,7 @@ export const KatasPage = () => {
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setCurrentPage(1);
-    getAllKatas(loggedIn, +event.target.value, 1)
+    getAllKatas(+event.target.value, 1)
       .then((response: AxiosResponse) => {
         if (
           response.status === 200 &&
@@ -118,7 +118,7 @@ export const KatasPage = () => {
     try {
       await deleteKata(id);
 
-      return getAllKatas(loggedIn, rowsPerPage, currentPage)
+      return getAllKatas(rowsPerPage, currentPage)
         .then((response: AxiosResponse) => {
           if (
             response.status === 200 &&

@@ -42,7 +42,7 @@ export const LoginMaterial = () => {
             if (response.data.token) {
               debugger;
               sessionStorage.setItem("sessionJWTToken", response.data.token);
-              sessionStorage.setItem("sessionUserID", response.data.userID);
+              sessionStorage.setItem("sessionUserID", response.data.userId);
               navigate("/");
             } else {
               throw new Error("Error generating Login Token");

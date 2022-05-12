@@ -35,7 +35,10 @@ export const MenuItems = () => {
         <ListItemIcon>
           <BarChartIcon />
         </ListItemIcon>
-        <ListItemText primary="Ranking" />
+        <ListItemText
+          primary="Ranking"
+          onClick={() => navigate("/katas/ranking")}
+        />
       </ListItemButton>
     </React.Fragment>
   );

@@ -39,7 +39,7 @@ export const KataDetailPage = () => {
       return navigate("/login");
     } else {
       if (id) {
-        getKataByID(loggedIn, id)
+        getKataByID(id)
           .then((response: AxiosResponse) => {
             if (response.status === 200 && response.data) {
               let kataData: Kata = {

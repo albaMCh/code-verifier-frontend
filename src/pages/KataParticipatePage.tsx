@@ -29,7 +29,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import { Stack } from "@mui/material";
+import { Stack, Rating } from "@mui/material";
 
 import { FileUploader } from "../components/uploader/FileUploader";
 
@@ -44,13 +44,14 @@ export const KataParticipatePage = () => {
   // Find id from params
   const { id } = useParams();
   const [kata, setKata] = useState<Kata | undefined>(undefined);
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
     if (!loggedIn) {
       return navigate("/login");
     } else {
       if (id) {
-        getKataByID(loggedIn, id)
+        getKataByID(id)
           .then((response: AxiosResponse) => {
             if (response.status === 200 && response.data) {
               let kataData: Kata = {
@@ -71,11 +72,12 @@ export const KataParticipatePage = () => {
               setTypedName(kataData.name);
               setTypedDescription(kataData.description);
               setSelectedLevel(kataData.level);
+              setValue(kataData.stars.average);
 
-              let userID: string =
+              let userId: string =
                 sessionStorage?.getItem("sessionUserID") || "";
 
-              if (kataData.participants.indexOf(userID) >= 0) {
+              if (kataData.participants.indexOf(userId) >= 0) {
                 setShowVote(true);
               }
 
@@ -87,7 +89,7 @@ export const KataParticipatePage = () => {
         return navigate("/katas");
       }
     }
-  }, [loggedIn]);
+  }, [loggedIn, id, navigate]);
 
   const [typedName, setTypedName] = React.useState("");
   const [typedDescription, setTypedDescription] = React.useState("");
@@ -102,8 +104,19 @@ export const KataParticipatePage = () => {
       await solveKata(kata?._id as string);
 
       setSolutionDisabled(false);
+      setShowVote(true);
     } catch (e) {
       alert("Ha habido un error al resolver la kata");
+    }
+  };
+
+  const handleChangeVote = (event: any, newValue: any) => {
+    if (id) {
+      voteKata(id, newValue)
+        .then((response: AxiosResponse) => {
+          setValue(response.data.average);
+        })
+        .catch((error) => console.error(`[VOTE KATA ERROR]: ${error}`));
     }
   };
 
@@ -169,17 +182,37 @@ export const KataParticipatePage = () => {
               justifyContent="center"
             >
               {showVote ? (
-                <Button variant="contained">
-                  {showSolution ? "Hide Solution" : "Show Solution"}
-                </Button>
+                <div>
+                  <Button
+                    variant="contained"
+                    disabled={solutionDisabled}
+                    onClick={() => setShowSolution(!showSolution)}
+                  >
+                    {showSolution ? "Hide Solution" : "Show Solution"}
+                  </Button>
+                  <Rating
+                    name="simple-controlled"
+                    value={value}
+                    onChange={handleChangeVote}
+                    precision={0.5}
+                  />
+                </div>
               ) : (
-                <Button
-                  variant="outlined"
-                  disabled={solutionDisabled}
-                  onClick={() => setShowSolution(!showSolution)}
-                >
-                  {showSolution ? "Hide Solution" : "Show Solution"}
-                </Button>
+                <div>
+                  <Button
+                    variant="outlined"
+                    disabled={solutionDisabled}
+                    onClick={() => setShowSolution(!showSolution)}
+                  >
+                    {showSolution ? "Hide Solution" : "Show Solution"}
+                  </Button>
+                  <Rating
+                    name="read-only"
+                    value={value}
+                    readOnly
+                    precision={0.5}
+                  />
+                </div>
               )}
             </Stack>
 

@@ -14,6 +14,7 @@ import { KataCreatePage } from "../pages/KataCreatePage";
 import { KataDetailPage } from "../pages/KataDetailPage";
 import { KataEditPage } from "../pages/KataEditPage";
 import { KataParticipatePage } from "../pages/KataParticipatePage";
+import { KataRankingPage } from "../pages/KataRankingPage";
 
 export const AppRoutes = () => {
   return (
@@ -28,6 +29,7 @@ export const AppRoutes = () => {
           path="/katas/:id/participate"
           element={<KataParticipatePage />}
         ></Route>
+        <Route path="/katas/ranking" element={<KataRankingPage />}></Route>
       </Route>
       <Route path="/login" element={<LoginPage />}></Route>
       <Route path="/register" element={<RegisterPage />}></Route>

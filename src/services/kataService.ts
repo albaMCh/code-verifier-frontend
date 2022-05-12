@@ -1,27 +1,36 @@
 import { AxiosRequestConfig, AxiosRequestHeaders } from "axios";
 import axios from "../utils/config/axios.config";
 
-export const getAllKatas = (token: string, limit?: number, page?: number) => {
+export const getAllKatas = (
+  rowsPerPage?: number,
+  page?: number,
+  limit?: number,
+  sortType?: string,
+  sortProperty?: string
+) => {
   // http:// localhost:8000/api/kata?id=XXXXXXXXXX
   // Add header with JWT in x-access-token
   const options: AxiosRequestConfig = {
     headers: {
-      "x-access-token": token,
+      "x-access-token": sessionStorage.getItem("sessionJWTToken") as string,
     },
     params: {
-      limit,
+      rowsPerPage,
       page,
+      limit,
+      sortType,
+      sortProperty,
     },
   };
 
   return axios.get("/katas", options);
 };
-export const getKataByID = (token: string, id: string) => {
+export const getKataByID = (id: string) => {
   // http:// localhost:8000/api/kata?id=XXXXXXXXXX
   // Add header with JWT in x-access-token
   const options: AxiosRequestConfig = {
     headers: {
-      "x-access-token": token,
+      "x-access-token": sessionStorage.getItem("sessionJWTToken") as string,
     },
     params: {
       id,
