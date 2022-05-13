@@ -143,6 +143,9 @@ export const KatasPage = () => {
   const onParticipateClick = (id: string) => {
     navigate(`/katas/${id}/participate`);
   };
+  const isKataEditable = (kata: any) => {
+    return kata.creator === window.sessionStorage.getItem("sessionUserID");
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -202,12 +205,14 @@ export const KatasPage = () => {
                     <Button
                       size="small"
                       onClick={() => navigate(`/katas/${kata._id}/edit`)}
+                      disabled={!isKataEditable(kata)}
                     >
                       Editar
                     </Button>
                     <Button
                       size="small"
                       onClick={() => onDeleteClick(kata._id)}
+                      disabled={!isKataEditable(kata)}
                     >
                       Eliminar
                     </Button>
